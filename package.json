@@ -1,0 +1,20 @@
+{
+  "name": "pinscraper",
+  "version": "0.0.1",
+  "description": "Scrapes pinballmarkt.de for pinball machines that are on sale and sends emails with matches.",
+  "main": "src/cronJob.js",
+  "keywords": [
+    "Pinball, Scraper"
+  ],
+  "author": "Jonas Johansson",
+  "dependencies": {
+    "bluebird": "^3.4.6",
+    "bunyan": "^1.8.1",
+    "cron": "^1.1.1",
+    "jsonfile": "^2.4.0",
+    "nightmare": "^2.7.0",
+    "nodemailer": "^2.6.4",
+    "nodemailer-sendgrid-transport": "^0.2.0",
+    "semistandard": "^9.1.0"
+  }
+}
