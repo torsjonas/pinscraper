@@ -1,0 +1,11 @@
+version: '2'
+services:
+  node:
+    container_name: pinballscraper_node
+    env_file: .env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./src:/app/src
+      - ./recipients.json:/app/recipients.json
