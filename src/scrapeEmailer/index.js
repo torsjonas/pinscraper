@@ -9,6 +9,11 @@ module.exports = {
     return Promise.mapSeries(recipients, recipient => {
       return scraper.scrape(recipient.pins)
         .then(matches => {
+          log.info({
+            event: 'scrape-done',
+            matches
+          });
+
           if (!matches || matches.length === 0) {
             return Promise.resolve('No matches');
           }
@@ -26,10 +31,13 @@ module.exports = {
             subject: `Pinscraper: ${foundPins}`,
             text,
             html
-          });
-        })
-        .then(result => {
-          log.info({ event: 'scrape-done', result });
+          })
+            .then(result => {
+              log.info({
+                event: 'nodemailer-done',
+                result
+              });
+            });
         });
     })
     .catch(err => {

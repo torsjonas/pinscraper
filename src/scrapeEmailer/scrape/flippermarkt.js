@@ -1,9 +1,7 @@
 var bunyan = require('bunyan');
 var log = bunyan.createLogger({name: 'pinscraper', module: 'flippermarkt'});
 var Nightmare = require('nightmare');
-var nightmare = Nightmare({
-  show: true
-});
+var nightmare = Nightmare();
 
 function scrape (pins) {
   if (!pins) {
@@ -49,7 +47,7 @@ function scrape (pins) {
       return matches;
     })
     .catch(err => {
-      log.error({ err });
+      log.error({ event: 'scrape-error-flippermarkt', err, message: err.message });
       return [];
     });
 }
