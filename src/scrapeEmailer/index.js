@@ -23,8 +23,8 @@ module.exports = {
           }
 
           var foundPins = matches.map(match => match.pin).join(', ');
-          var text = matches.map(match => `${match.pin}: ${match.href}`).join(', ');
-          var html = `<ul>${matches.map(match => `<li>${match.pin}: ${match.href}</li>`)}</ul>`;
+          var text = matches.map(match => `${match.pin}: ${match.matchUri}`).join(', ');
+          var html = `<ul>${matches.map(match => `<li>${match.pin}: ${match.matchUri}</li>`)}</ul>`;
 
           return nodemailer.sendMail({
             to: recipient.email,

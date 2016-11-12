@@ -2,10 +2,13 @@ var bunyan = require('bunyan');
 var log = bunyan.createLogger({name: 'pinscraper', module: 'flippermarkt'});
 var cheerio = require('cheerio');
 var rp = require('request-promise');
-// var Nightmare = require('nightmare');
-// var nightmare = Nightmare();
+var url = require('url');
+
+var baseUrl = 'http://flippermarkt.de/community/forum/';
+var uri = url.resolve(baseUrl, 'forumdisplay.php?f=13');
+
 var options = {
-  uri: 'http://flippermarkt.de/community/forum/forumdisplay.php?f=13',
+  uri,
   transform: function (body) {
     return cheerio.load(body);
   }
@@ -30,12 +33,14 @@ function scrape (pins) {
             if (title && title.toLowerCase().indexOf(pin.toLowerCase()) !== -1 ||
                 hrefText && hrefText.toLowerCase().indexOf(pin.toLowerCase()) !== -1) {
               var a = $(elem).find('a')[0];
+              var href = a && a.attribs['href'];
+              var matchUri = href ? url.resolve(baseUrl, href) : null;
               matches.push({
                 site,
                 pin,
                 title,
                 hrefText,
-                href: a && a.attribs['href']
+                matchUri
               });
             }
           });
