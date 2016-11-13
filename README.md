@@ -10,5 +10,6 @@ A cron job reads from a recipients json file having content as the below example
   ]
 }
 
-Create the recipients file at config/recipients.json
+Create the recipients file at config/recipients.json. Sending emails is done with nodemailer sendgrid and a sendgrid api key is expected in environment variable SENDGRID_API_KEY.
+
 ```
