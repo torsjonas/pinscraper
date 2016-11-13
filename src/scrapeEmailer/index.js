@@ -4,9 +4,20 @@ var nodemailer = require('./nodemailer');
 var bunyan = require('bunyan');
 var log = bunyan.createLogger({name: 'pinscraper scrapeEmailer'});
 var cacheManager = require('cache-manager');
-// cache matches per recipient for one year
+var fsStore = require('cache-manager-fs');
+
 var oneYear = 60 * 60 * 24 * 7 * 4 * 12;
-var memoryCache = cacheManager.caching({ store: 'memory', max: 1000000, ttl: oneYear });
+var hundredMb = 100000000;
+var cache = cacheManager.caching({
+  store: fsStore,
+  options: {
+    ttl: oneYear,
+    maxsize: hundredMb,
+    path: 'cache/',
+    preventfill: false,
+    zip: false
+  }
+});
 
 var toCacheKey = function (match, recipient) {
   if (!match || !match.matchUri || !recipient || !recipient.email) {
@@ -19,9 +30,18 @@ var toCacheKey = function (match, recipient) {
 var filterAlreadySentMatches = function (scrapeMatches, recipient) {
   return Promise.filter(scrapeMatches, match => {
     const cacheKey = toCacheKey(match, recipient);
-    return memoryCache.get(cacheKey)
+
+    return new Promise(function (resolve, reject) {
+      cache.get(cacheKey, {}, function (err, cachedValue) {
+        if (err) {
+          reject(err);
+        }
+
+        resolve(cachedValue);
+      });
+    })
       .then(cachedValue => {
-        return cachedValue === undefined;
+        return !cachedValue;
       });
   });
 };
@@ -29,7 +49,16 @@ var filterAlreadySentMatches = function (scrapeMatches, recipient) {
 var cacheMatches = function (matches, recipient) {
   return Promise.map(matches, match => {
     const cacheKey = toCacheKey(match, recipient);
-    return memoryCache.set(cacheKey, true);
+
+    return new Promise(function (resolve, reject) {
+      cache.set(cacheKey, true, {}, function (err) {
+        if (err) {
+          reject(err);
+        }
+
+        resolve();
+      });
+    });
   })
     .then(() => {
       log.info({ event: 'cache-matches-done' });

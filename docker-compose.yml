@@ -9,3 +9,4 @@ services:
     volumes:
       - ./src:/app/src
       - ./config:/app/config
+      - ./cache:/app/cache
