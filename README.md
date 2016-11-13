@@ -15,5 +15,4 @@ Create the recipients file at 'config/recipients.json'.
 
 Sending emails is done with nodemailer sendgrid and a sendgrid api key is expected in environment variable SENDGRID_API_KEY.
 
-The filed based cache, for preventing the same matches from being resent by email, is in the directory 'cache/' 
-
+The filed based cache, for preventing a recipient getting the same matches resent by email, is kept in the directory 'cache/'
