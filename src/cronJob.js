@@ -3,7 +3,7 @@ var CronJob = require('cron').CronJob;
 var scrapeEmailer = require('./scrapeEmailer');
 var bunyan = require('bunyan');
 var log = bunyan.createLogger({name: 'pinscraper webserver'});
-var jsonObj = jsonfile.readFileSync('./recipients.json');
+var jsonObj = jsonfile.readFileSync('./config/recipients.json');
 
 log.info({ event: 'pin-scraper-create-cron' });
 // Run every 6 hours

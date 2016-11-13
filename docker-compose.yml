@@ -8,4 +8,4 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./src:/app/src
-      - ./recipients.json:/app/recipients.json
+      - ./config:/app/config
