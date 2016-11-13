@@ -6,9 +6,9 @@ var log = bunyan.createLogger({name: 'pinscraper webserver'});
 var jsonObj = jsonfile.readFileSync('./config/recipients.json');
 
 log.info({ event: 'pin-scraper-create-cron' });
-// Run every 6 hours
+// Run every hour
 var job = new CronJob(
-  '0 0 */6 * * *',
+  '0 0 0-23 * * *',
   function () {
     try {
       log.info({ event: 'pin-scraper-cron-start' });
