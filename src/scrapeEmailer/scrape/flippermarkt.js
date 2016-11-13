@@ -26,14 +26,13 @@ function scrape (pins) {
       var matches = [];
       $('#threadbits_forum_13 tr td[id*="td_threadtitle"]').each(function (i, elem) {
         var title = elem.attribs['title'];
-        var elemHref = $(elem).find('a[id*="thread_title"]');
-        var hrefText = elemHref && elemHref.text();
+        var aThreadTitle = $(elem).find('a[id*="thread_title"]')[0];
+        var hrefText = aThreadTitle && $(aThreadTitle).text();
         if (title || hrefText) {
           pins.forEach(pin => {
             if (title && title.toLowerCase().indexOf(pin.toLowerCase()) !== -1 ||
                 hrefText && hrefText.toLowerCase().indexOf(pin.toLowerCase()) !== -1) {
-              var a = $(elem).find('a')[0];
-              var href = a && a.attribs['href'];
+              var href = aThreadTitle && aThreadTitle.attribs['href'];
               var matchUri = href ? url.resolve(baseUrl, href) : null;
               matches.push({
                 site,
