@@ -10,10 +10,4 @@ if (!process.argv[3]) {
 
 scrapeEmailer.run([
   { 'pins': [process.argv[2]], 'email': process.argv[3] }
-])
-  .then(() => {
-    console.log('second time');
-    return scrapeEmailer.run([
-      { 'pins': [process.argv[2]], 'email': process.argv[3] }
-    ]);
-  });
+]);
