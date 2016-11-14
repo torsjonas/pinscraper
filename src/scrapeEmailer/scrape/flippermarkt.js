@@ -4,6 +4,7 @@ var cheerio = require('cheerio');
 var rp = require('request-promise');
 var url = require('url');
 var querystring = require('querystring');
+var matchUtil = require('./matchUtil');
 
 var baseUrl = 'http://flippermarkt.de/community/forum/';
 var uri = url.resolve(baseUrl, 'forumdisplay.php?f=13');
@@ -31,7 +32,7 @@ function keepTopicQSParameter (baseUrl, hrefAttrib) {
     return;
   }
 
-  const { t } = parsedQs;
+  var { t } = parsedQs;
   var baseHref = resolvedUrl.substring(0, resolvedUrl.indexOf(parsedUrl.search));
   return baseHref + '?' + querystring.stringify({ t });
 }
@@ -52,8 +53,7 @@ function scrape (pins) {
         var hrefText = aThreadTitle && $(aThreadTitle).text();
         if (title || hrefText) {
           pins.forEach(pin => {
-            if (title && title.toLowerCase().indexOf(pin.toLowerCase()) !== -1 ||
-                hrefText && hrefText.toLowerCase().indexOf(pin.toLowerCase()) !== -1) {
+            if (matchUtil.isMatch(pin, title) || matchUtil.isMatch(pin, hrefText)) {
               var hrefAttrib = aThreadTitle && aThreadTitle.attribs['href'];
               var matchUri = keepTopicQSParameter(baseUrl, hrefAttrib);
 

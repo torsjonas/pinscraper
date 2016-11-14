@@ -2,6 +2,7 @@ var bunyan = require('bunyan');
 var log = bunyan.createLogger({name: 'pinscraper', module: 'svenskaflippersallskapet'});
 var cheerio = require('cheerio');
 var rp = require('request-promise');
+var matchUtil = require('./matchUtil');
 
 var options = {
   uri: 'http://www.svenskaflippersallskapet.com/index.php?board=7.0',
@@ -24,7 +25,7 @@ function scrape (pins) {
         var text = $(elem).text();
         if (text) {
           pins.forEach(pin => {
-            if (text.toLowerCase().indexOf(pin.toLowerCase()) !== -1) {
+            if (matchUtil.isMatch(pin)) {
               var matchUri = elem.attribs['href'] || null;
               matches.push({
                 site,

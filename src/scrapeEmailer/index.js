@@ -29,7 +29,7 @@ var toCacheKey = function (match, recipient) {
 
 var filterAlreadySentMatches = function (scrapeMatches, recipient) {
   return Promise.filter(scrapeMatches, match => {
-    const cacheKey = toCacheKey(match, recipient);
+    var cacheKey = toCacheKey(match, recipient);
 
     return new Promise(function (resolve, reject) {
       cache.get(cacheKey, {}, function (err, cachedValue) {
@@ -48,7 +48,7 @@ var filterAlreadySentMatches = function (scrapeMatches, recipient) {
 
 var cacheMatches = function (matches, recipient) {
   return Promise.map(matches, match => {
-    const cacheKey = toCacheKey(match, recipient);
+    var cacheKey = toCacheKey(match, recipient);
 
     return new Promise(function (resolve, reject) {
       cache.set(cacheKey, true, {}, function (err) {
@@ -63,6 +63,24 @@ var cacheMatches = function (matches, recipient) {
     .then(() => {
       log.info({ event: 'cache-matches-done' });
     });
+};
+
+var formatPin = function (pin) {
+  if (!pin || (!pin.name && !pin.abbreviation)) {
+    throw new Error('pin whith property name and/or abbreviation expected');
+  }
+
+  if (pin.name) {
+    if (pin.abbreviation) {
+      return `${pin.name} (${pin.abbreviation})`;
+    } else {
+      return pin.name;
+    }
+  } else {
+    if (pin.abbreviation) {
+      return pin.abbreviation;
+    }
+  }
 };
 
 module.exports = {
@@ -88,15 +106,13 @@ module.exports = {
                 return Promise.resolve('All found matches have already been sent');
               }
 
-              var foundPins = matches.map(match => match.pin).join(', ');
-              var text = matches.map(match => `${match.pin}: ${match.matchUri}`).join(', ');
-              var html = `<ul>${matches.map(match => `<li>${match.pin}: ${match.matchUri}</li>`)}</ul>`;
+              var foundPins = matches.map(match => formatPin(match.pin)).join(', ');
+              var text = matches.map(match => `${formatPin(match.pin)}: ${match.matchUri}\n`);
 
               return nodemailer.sendMail({
                 to: recipient.email,
                 subject: `Pinscraper: ${foundPins}`,
-                text,
-                html
+                text
               })
                 .then(result => {
                   log.info({ event: 'nodemailer-done', result });

@@ -6,7 +6,7 @@ A cron job reads from a recipients json file having content as the below example
 ```
 {
   "recipients": [
-    { "email": "your@email.com", "pins": ["Alien Star", "Attack From Mars"] }
+    { "email": "your@email.com", "pins": [{ "name":"Alien Star" }, { "name":"Attack From Mars", "abbreviation":"AFM" }] }
   ]
 }
 ```
