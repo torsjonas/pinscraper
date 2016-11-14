@@ -3,6 +3,7 @@ var log = bunyan.createLogger({name: 'pinscraper', module: 'flippermarkt'});
 var cheerio = require('cheerio');
 var rp = require('request-promise');
 var url = require('url');
+var querystring = require('querystring');
 
 var baseUrl = 'http://flippermarkt.de/community/forum/';
 var uri = url.resolve(baseUrl, 'forumdisplay.php?f=13');
@@ -13,6 +14,27 @@ var options = {
     return cheerio.load(body);
   }
 };
+
+function keepTopicQSParameter (baseUrl, hrefAttrib) {
+  var resolvedUrl = hrefAttrib ? url.resolve(baseUrl, hrefAttrib) : null;
+  if (!resolvedUrl) {
+    return;
+  }
+
+  var parsedUrl = url.parse(resolvedUrl);
+  if (!parsedUrl || !parsedUrl.search || !parsedUrl.query) {
+    return;
+  }
+
+  var parsedQs = querystring.parse(parsedUrl.query);
+  if (!parsedQs || !parsedQs.t) {
+    return;
+  }
+
+  const { t } = parsedQs;
+  var baseHref = resolvedUrl.substring(0, resolvedUrl.indexOf(parsedUrl.search));
+  return baseHref + '?' + querystring.stringify({ t });
+}
 
 function scrape (pins) {
   if (!pins) {
@@ -32,15 +54,20 @@ function scrape (pins) {
           pins.forEach(pin => {
             if (title && title.toLowerCase().indexOf(pin.toLowerCase()) !== -1 ||
                 hrefText && hrefText.toLowerCase().indexOf(pin.toLowerCase()) !== -1) {
-              var href = aThreadTitle && aThreadTitle.attribs['href'];
-              var matchUri = href ? url.resolve(baseUrl, href) : null;
-              matches.push({
-                site,
-                pin,
-                title,
-                hrefText,
-                matchUri
-              });
+              var hrefAttrib = aThreadTitle && aThreadTitle.attribs['href'];
+              var matchUri = keepTopicQSParameter(baseUrl, hrefAttrib);
+
+              if (matchUri) {
+                matches.push({
+                  site,
+                  pin,
+                  title,
+                  hrefText,
+                  matchUri
+                });
+              } else {
+                log.error({ event: 'parse-uri-error-flippermarkt', hrefAttrib });
+              }
             }
           });
         }
