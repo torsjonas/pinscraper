@@ -1,6 +1,6 @@
 # pinscraper
 
-Scrapes http://flippermarkt.de and svenskaflippersallskapet.se for pinball machines and sends an email to recipients subscribing to machines.
+Scrapes http://flippermarkt.de and http://www.svenskaflippersallskapet.com for pinball machines and sends an email to recipients subscribing to machines.
 The same link will not be sent to each recipient more than once.
 Can be run as a cron job or lambda scheduled job.
 
