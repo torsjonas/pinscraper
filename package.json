@@ -8,6 +8,7 @@
   ],
   "author": "Jonas Johansson",
   "dependencies": {
+    "aws-sdk": "^2.82.0",
     "bluebird": "^3.4.6",
     "bunyan": "^1.8.1",
     "cache-manager": "^2.2.0",
@@ -15,7 +16,6 @@
     "cheerio": "^0.22.0",
     "cron": "^1.1.1",
     "install": "^0.8.2",
-    "jsonfile": "^2.4.0",
     "nodemailer": "^2.6.4",
     "nodemailer-sendgrid-transport": "^0.2.0",
     "npm": "^3.10.9",

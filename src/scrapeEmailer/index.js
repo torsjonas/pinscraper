@@ -3,62 +3,29 @@ var scraper = require('./scrape');
 var nodemailer = require('./nodemailer');
 var bunyan = require('bunyan');
 var log = bunyan.createLogger({name: 'pinscraper scrapeEmailer'});
-var cacheManager = require('cache-manager');
-var fsStore = require('cache-manager-fs');
-
-var oneYear = 60 * 60 * 24 * 7 * 4 * 12;
-var hundredMb = 100000000;
-var cache = cacheManager.caching({
-  store: fsStore,
-  options: {
-    ttl: oneYear,
-    maxsize: hundredMb,
-    path: 'cache/',
-    preventfill: false,
-    zip: false
-  }
-});
+var s3 = require('../resources/s3');
 
 var toCacheKey = function (match, recipient) {
   if (!match || !match.matchUri || !recipient || !recipient.email) {
     throw new Error('match.matchUri and recipient.email required');
   }
 
-  return recipient.email + ':' + match.matchUri;
+  return encodeURIComponent(recipient.email + ':' + match.matchUri);
 };
 
 var filterAlreadySentMatches = function (scrapeMatches, recipient) {
   return Promise.filter(scrapeMatches, match => {
     var cacheKey = toCacheKey(match, recipient);
 
-    return new Promise(function (resolve, reject) {
-      cache.get(cacheKey, {}, function (err, cachedValue) {
-        if (err) {
-          reject(err);
-        }
-
-        resolve(cachedValue);
-      });
-    })
-      .then(cachedValue => {
-        return !cachedValue;
-      });
+    return s3.exists(cacheKey)
+      .then(exists => !exists);
   });
 };
 
 var cacheMatches = function (matches, recipient) {
   return Promise.map(matches, match => {
     var cacheKey = toCacheKey(match, recipient);
-
-    return new Promise(function (resolve, reject) {
-      cache.set(cacheKey, true, {}, function (err) {
-        if (err) {
-          reject(err);
-        }
-
-        resolve();
-      });
-    });
+    return s3.put(cacheKey, 'yep');
   })
     .then(() => {
       log.info({ event: 'cache-matches-done' });
@@ -124,6 +91,7 @@ module.exports = {
         });
     })
     .catch(err => {
+      console.error(err);
       log.error({ event: 'pin-scrape-error', message: err.message, err });
     });
   }

@@ -1,24 +1,30 @@
-var jsonfile = require('jsonfile');
 var CronJob = require('cron').CronJob;
 var scrapeEmailer = require('./scrapeEmailer');
 var bunyan = require('bunyan');
 var log = bunyan.createLogger({name: 'pinscraper webserver'});
-var recipients = jsonfile.readFileSync('./config/recipients.json').recipients;
-log.info({ event: 'pin-scraper-create-cron', recipients });
+var s3 = require('./resources/s3');
 
-// Run every hour
-var job = new CronJob(
-  '0 0 0-23 * * *',
-  function () {
-    try {
-      log.info({ event: 'pin-scraper-cron-start' });
-      scrapeEmailer.run(recipients);
-    } catch (err) {
-      log.error({ event: 'pin-scraper-cron-error', err });
-    }
-  },
-  function () {},
-  true
-);
+log.info({ event: 'pin-scraper-fetching-recipients' });
+s3.getRecipients()
+  .then(response => {
+    var recipients = response.recipients;
+    log.info({ event: 'pin-scraper-create-cron', recipients });
 
-module.exports = job;
+    // Run every hour
+    var job = new CronJob(
+      '0 0 0-23 * * *',
+      function () {
+        try {
+          log.info({ event: 'pin-scraper-cron-start' });
+          scrapeEmailer.run(recipients);
+        } catch (err) {
+          log.error({ event: 'pin-scraper-cron-error', err });
+        }
+      },
+      function () {},
+      true
+    );
+  })
+  .catch(err => {
+    log.error({ event: 'pin-scraper-failed-to-fetch-recipients' });
+  });
