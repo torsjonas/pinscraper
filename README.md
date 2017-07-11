@@ -1,8 +1,12 @@
 # pinscraper
 
-Scrapes http://flippermarkt.de for pinball machines and sends an email to recipients subscribing to machines.
+Scrapes http://flippermarkt.de and svenskaflippersallskapet.se for pinball machines and sends an email to recipients subscribing to machines.
 The same link will not be sent to each recipient more than once.
-A cron job reads from a recipients json file having content as the below example:
+Can be run as a cron job or lambda scheduled job.
+
+AWS S3 is used for caching of already sent forum threads to prevent duplicates.
+It is also the place of storage of recipients.json.
+The scraper fetches recipients json file from an S3 bucket having content as the below example:
 ```
 {
   "recipients": [
@@ -11,8 +15,11 @@ A cron job reads from a recipients json file having content as the below example
 }
 ```
 
-Create the recipients file at 'config/recipients.json'.
+For AWS access, the following environment variables are expected:
+```
+PINSCRAPER_BUCKET_NAME
+ACCESS_KEY_ID
+SECRET_ACCESS_KEY
+```
 
-Sending emails is done with nodemailer sendgrid and a sendgrid api key is expected in environment variable SENDGRID_API_KEY.
-
-The filed based cache, for preventing a recipient getting the same matches resent by email, is kept in the directory 'cache/'
+Sending emails is done with nodemailer sendgrid and a sendgrid api key is expected in environment variable `SENDGRID_API_KEY`.
