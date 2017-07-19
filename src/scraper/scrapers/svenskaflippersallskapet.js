@@ -2,7 +2,7 @@ var bunyan = require('bunyan');
 var log = bunyan.createLogger({name: 'pinscraper', module: 'svenskaflippersallskapet'});
 var cheerio = require('cheerio');
 var rp = require('request-promise');
-var matchUtil = require('./matchUtil');
+var matchUtil = require('../../utils/matchUtil');
 
 var options = {
   uri: 'http://www.svenskaflippersallskapet.com/index.php?board=7.0',
