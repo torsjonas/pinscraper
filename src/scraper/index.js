@@ -51,6 +51,9 @@ function createRecipientMatches (recipients, scrapeMatches) {
 
 function run (recipients, matchCache) {
   var allPins = recipients.reduce((res, recipient) => res.concat(recipient.pins), []);
+  if (allPins.length === 0) {
+    return Promise.resolve('No pin subscriptions');
+  }
 
   return scrape(allPins)
     .then(scrapeMatches => {

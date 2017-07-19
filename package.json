@@ -8,9 +8,10 @@
   ],
   "author": "Jonas Johansson",
   "scripts": {
-    "lint": "semistandard ./src/**/*.js",
+    "lint": "semistandard",
     "runOnce": "node ./src/runOnce",
-    "deploy": "sh ./deploy-to-aws.sh"
+    "deploy": "sh ./deploy-to-aws.sh",
+    "test": "npm run lint && mocha ./test/**/*.spec.js"
   },
   "dependencies": {
     "aws-sdk": "^2.82.0",
@@ -22,6 +23,9 @@
     "sendgrid": "^5.1.2"
   },
   "devDependencies": {
-    "semistandard": "^11.0.0"
+    "chai": "^4.1.0",
+    "mocha": "^3.4.2",
+    "semistandard": "^11.0.0",
+    "sinon": "^2.3.8"
   }
 }
