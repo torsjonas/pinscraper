@@ -1,18 +1,24 @@
-var scrapeEmailer = require('./scrapeEmailer');
+var scraper = require('./scraper');
+var matchCache = require('./resources/matchCache');
+
+var noCache = {
+  getNewMatches: (scrapeMatches, recipient) => Promise.resolve(scrapeMatches),
+  put: () => Promise.resolve()
+};
 
 if (!process.argv[2]) {
-  throw new Error('First argument should be of format "type:text" where type is either name or abbreviation and text is the corresponding text value to search for. E.g. "name:Attack From Mars" or "abbreviation:AFM"');
+  throw new Error('First argument should be the name or abbreviation of a pinball machine to search for, e.g. "Attack From Mars"');
 }
 
 if (!process.argv[3]) {
-  throw new Error('Second argument should be an email address for the recipient.');
+  throw new Error('Second argument should be an email address.');
 }
 
-var searchParts = process.argv[2].split(':');
 var pin = {
-  [searchParts[0]]: searchParts[1]
+  name: process.argv[2]
 };
 
-scrapeEmailer.run([
-  { 'pins': [pin], 'email': process.argv[3] }
-]);
+var cache = process.argv[4] === 'no-cache' ? noCache : matchCache;
+
+var recipients = [{ 'pins': [pin], 'email': process.argv[3] }];
+scraper.run(recipients, cache);

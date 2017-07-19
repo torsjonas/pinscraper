@@ -3,10 +3,14 @@ services:
   node:
     container_name: pinballscraper_node
     env_file: .env
+    environment:
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_DEFAULT_REGION
     build:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./src:/app/src
-      - ./config:/app/config
-      - ./cache:/app/cache
+      - ./package.json:/opt/app/package.json
+      - ./src:/opt/app/src
+      - ./deploy-to-aws.sh:/opt/app/deploy-to-aws.sh

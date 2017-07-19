@@ -7,19 +7,21 @@
     "Pinball, Scraper"
   ],
   "author": "Jonas Johansson",
+  "scripts": {
+    "lint": "semistandard ./src/**/*.js",
+    "runOnce": "node ./src/runOnce",
+    "deploy": "sh ./deploy-to-aws.sh"
+  },
   "dependencies": {
-    "bluebird": "^3.4.6",
+    "aws-sdk": "^2.82.0",
     "bunyan": "^1.8.1",
-    "cache-manager": "^2.2.0",
-    "cache-manager-fs": "^1.0.5",
     "cheerio": "^0.22.0",
     "cron": "^1.1.1",
-    "install": "^0.8.2",
-    "jsonfile": "^2.4.0",
-    "nodemailer": "^2.6.4",
-    "nodemailer-sendgrid-transport": "^0.2.0",
-    "npm": "^3.10.9",
+    "request": "^2.81.0",
     "request-promise": "^4.1.1",
-    "semistandard": "^9.1.0"
+    "sendgrid": "^5.1.2"
+  },
+  "devDependencies": {
+    "semistandard": "^11.0.0"
   }
 }

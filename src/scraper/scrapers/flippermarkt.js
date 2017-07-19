@@ -4,7 +4,7 @@ var cheerio = require('cheerio');
 var rp = require('request-promise');
 var url = require('url');
 var querystring = require('querystring');
-var matchUtil = require('./matchUtil');
+var matchUtil = require('../../utils/matchUtil');
 
 var baseUrl = 'http://flippermarkt.de/community/forum/';
 var uri = url.resolve(baseUrl, 'forumdisplay.php?f=13');
