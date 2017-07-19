@@ -15,7 +15,8 @@ PINSCRAPER_AWS_SECRET_ACCESS_KEY
 
 Sending emails is done with sendgrid and an api key is expected in environment variable `SENDGRID_API_KEY`.
 
-**Installation (local)**:
+**Installation (local)**
+
 1. `npm install`
 To start a node-cron job:
 2. `node .`
@@ -24,12 +25,14 @@ To upload a zip to AWS S3 and update an existing lambda function to use that upl
 Run `aws configure` and specify credentials and region with lambda and S3 access.
 Run `./deploy-to-aws.sh`
 
-**Installation (Docker)**:
+**Installation (Docker)**
+
 To start a node-cron job:
 
 `docker-compose up`
 
 **Run a one-off scrape**
+
 To run a one off scrape for a single machine and send an email if found:
 
 `docker-compose run node npm run runOnce "Star Trek" youremail@mail.com no-cache`
