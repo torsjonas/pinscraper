@@ -26,10 +26,12 @@ Run `./deploy-to-aws.sh`
 
 **Installation (Docker)**:
 To start a node-cron job:
+
 `docker-compose up`
 
 **Run a one-off scrape**
 To run a one off scrape for a single machine and send an email if found:
+
 `docker-compose run node npm run runOnce "Star Trek" youremail@mail.com no-cache`
 
 To do a dockerized upload a zip to S3 and update an existing lambda function to use that uploaded zip, you need to set host environment variables
@@ -39,4 +41,5 @@ AWS_SECRET_ACCESS_KEY
 AWS_DEFAULT_REGION
 ```
 and then run
+
 `docker-compose run --rm node npm run deploy`
