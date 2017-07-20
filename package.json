@@ -11,7 +11,7 @@
     "lint": "semistandard",
     "runOnce": "node ./src/runOnce",
     "deploy": "sh ./deploy-to-aws.sh",
-    "test": "npm run lint && mocha ./test/**/*.spec.js"
+    "test": "npm run lint && mocha ./test/*"
   },
   "dependencies": {
     "aws-sdk": "^2.82.0",

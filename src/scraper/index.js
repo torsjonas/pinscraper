@@ -5,7 +5,7 @@ var flippermarkt = require('./scrapers/flippermarkt');
 var sfss = require('./scrapers/svenskaflippersallskapet');
 var scrapers = [flippermarkt, sfss];
 
-function scrape (pins) {
+function _scrape (pins) {
   return Promise.all(scrapers.map(scraper => scraper.scrape(pins)))
     .then(scrapeRequests => {
       return scrapeRequests.reduce((total, scrapeMatches) => {
@@ -14,7 +14,7 @@ function scrape (pins) {
     });
 }
 
-function hasPin (recipient, pin) {
+function _hasPin (recipient, pin) {
   if (!recipient || !recipient.pins || !pin) {
     return false;
   }
@@ -29,14 +29,14 @@ function hasPin (recipient, pin) {
   return !!foundPin;
 }
 
-function createRecipientMatches (recipients, scrapeMatches) {
+function _createRecipientMatches (recipients, scrapeMatches) {
   var allRecipientMatches = [];
 
   recipients.forEach(recipient => {
     var matches = [];
 
     scrapeMatches.forEach(match => {
-      if (hasPin(recipient, match.pin)) {
+      if (_hasPin(recipient, match.pin)) {
         matches.push(match);
       }
     });
@@ -55,7 +55,7 @@ function run (recipients, matchCache) {
     return Promise.resolve('No pin subscriptions');
   }
 
-  return scrape(allPins)
+  return _scrape(allPins)
     .then(scrapeMatches => {
       log.info({ event: 'scrape-done', scrapeMatches });
 
@@ -63,7 +63,7 @@ function run (recipients, matchCache) {
         return Promise.resolve('No matches');
       }
 
-      var recipientMatches = createRecipientMatches(recipients, scrapeMatches);
+      var recipientMatches = _createRecipientMatches(recipients, scrapeMatches);
       var getNewMatchesPromises = recipientMatches.map(({matches, recipient}) => {
         // filter out matches for which we have already sent a message to the recipient
         return matchCache.getNewMatches(matches, recipient)
@@ -101,5 +101,8 @@ function run (recipients, matchCache) {
 }
 
 module.exports = {
-  run
+  run,
+  _scrape,
+  _hasPin,
+  _createRecipientMatches
 };

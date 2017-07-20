@@ -2,18 +2,21 @@ var sg = require('sendgrid')(process.env.SENDGRID_API_KEY);
 var helper = require('sendgrid').mail;
 
 function sendMatches (matches, recipient) {
-  var foundPins = matches.map(match => formatPin(match.pin)).join(', ');
-  var text = matches.map(match => `${formatPin(match.pin)}: ${match.matchUri}`).join('\n');
-  var params = {
+  var params = _getMailParams(matches, recipient);
+  return sendMail(params);
+}
+
+function _getMailParams (matches, recipient) {
+  var foundPins = matches.map(match => _formatPin(match.pin)).join(', ');
+  var text = matches.map(match => `${_formatPin(match.pin)}: ${match.matchUri}`).join('\n');
+  return {
     to: recipient.email,
     subject: `Pinscraper: ${foundPins}`,
     text
   };
-
-  return sendMail(params);
 }
 
-function formatPin (pin) {
+function _formatPin (pin) {
   if (!pin || (!pin.name && !pin.abbreviation)) {
     throw new Error('pin whith property name and/or abbreviation expected');
   }
@@ -51,5 +54,7 @@ function sendMail ({ to, subject, text, html }) {
 }
 
 module.exports = {
-  sendMatches
+  sendMatches,
+  _getMailParams,
+  _formatPin
 };
