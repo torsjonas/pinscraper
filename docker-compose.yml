@@ -14,3 +14,4 @@ services:
       - ./package.json:/opt/app/package.json
       - ./src:/opt/app/src
       - ./deploy-to-aws.sh:/opt/app/deploy-to-aws.sh
+      - ./test:/opt/app/test

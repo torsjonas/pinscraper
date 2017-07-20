@@ -1,4 +1,5 @@
 /* eslint-env mocha */
+
 var sinon = require('sinon');
 var assert = require('chai').assert;
 var s3 = require('../src/resources/s3');
@@ -7,13 +8,8 @@ var handler = require('../src/lambda').handler;
 
 describe('handler', function () {
   afterEach(function () {
-    if (s3.getRecipients.restore) {
-      s3.getRecipients.restore();
-    }
-
-    if (scraper.run.restore) {
-      scraper.run.restore();
-    }
+    s3.getRecipients.restore && s3.getRecipients.restore();
+    scraper.run.restore && scraper.run.restore();
   });
 
   it('should call lambda callback after successful run', function (done) {
