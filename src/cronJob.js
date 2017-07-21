@@ -3,7 +3,6 @@ var scraper = require('./scraper');
 var bunyan = require('bunyan');
 var log = bunyan.createLogger({name: 'pinscraper node-cron'});
 var s3 = require('./resources/s3');
-var matchCache = require('./resources/matchCache');
 
 function createCron (recipients) {
   log.info({ event: 'pin-scraper-create-cron', recipients });
@@ -14,7 +13,7 @@ function createCron (recipients) {
     function () {
       try {
         log.info({ event: 'pin-scraper-cron-start' });
-        scraper.run(recipients, matchCache);
+        scraper.run(recipients, s3);
       } catch (err) {
         log.error({ event: 'pin-scraper-cron-error', err });
       }

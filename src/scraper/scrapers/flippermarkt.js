@@ -43,7 +43,7 @@ function scrape (pins) {
   }
 
   var site = 'Flippermarkt';
-  log.info({ event: 'scrape', site, pins });
+  log.info({ event: 'start-scrape', site });
   return rp(options)
     .then($ => {
       var matches = [];

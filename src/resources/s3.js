@@ -13,10 +13,6 @@ var s3 = new S3({
   }
 });
 
-function createCacheKey (key) {
-  return `cache/${key}`;
-}
-
 function getRecipients () {
   var params = {
     Key: 'recipients.json'
@@ -34,7 +30,7 @@ function getRecipients () {
 
 function exists (key) {
   var params = {
-    Key: createCacheKey(key)
+    Key: key
   };
 
   return s3.headObject(params).promise()
@@ -42,17 +38,49 @@ function exists (key) {
     .catch(() => false);
 }
 
-function put (key, value) {
-  var params = {
-    Key: createCacheKey(key),
-    Body: value
-  };
+function getNewMatches (scrapeMatches, recipient) {
+  var newMatches = [];
+  return Promise.all(scrapeMatches, match => {
+    var cacheKey = _toCacheKey(match, recipient);
 
-  return s3.putObject(params).promise();
+    return exists(cacheKey)
+      .then(exists => {
+        if (!exists) {
+          newMatches.push(match);
+        }
+      });
+  })
+    .then(() => {
+      return newMatches;
+    });
+}
+
+function putMatches (matches, recipient) {
+  var putPromises = matches.map(match => {
+    var key = _toCacheKey(match, recipient);
+    var params = {
+      Key: key,
+      Body: 'match'
+    };
+
+    return s3.putObject(params).promise();
+  });
+
+  return Promise.all(putPromises);
+}
+
+function _toCacheKey (match, recipient) {
+  if (!match || !match.matchUri || !recipient || !recipient.email) {
+    throw new Error('match.matchUri and recipient.email required');
+  }
+
+  return 'cache/' + encodeURIComponent(recipient.email + ':' + match.matchUri);
 }
 
 module.exports = {
   getRecipients,
-  exists,
-  put
+  putMatches,
+  getNewMatches,
+  _toCacheKey,
+  _client: s3
 };

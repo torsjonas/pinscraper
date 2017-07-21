@@ -34,7 +34,7 @@ function _formatPin (pin) {
   }
 }
 
-function sendMail ({ to, subject, text, html }) {
+function sendMail ({ to, subject, text }) {
   if (!to || !subject || !text) {
     return Promise.reject(new Error('Can\'t send email. to, subject and text are required.'));
   }

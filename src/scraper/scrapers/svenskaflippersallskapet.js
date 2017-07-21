@@ -17,7 +17,7 @@ function scrape (pins) {
   }
 
   var site = 'Svenska Flippersällskapet';
-  log.info({ event: 'scrape', site, pins });
+  log.info({ event: 'start-scrape', site });
   return rp(options)
     .then($ => {
       var matches = [];

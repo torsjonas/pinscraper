@@ -6,19 +6,19 @@ var scraper = require('../../src/scraper');
 var flippermarkt = require('../../src/scraper/scrapers/flippermarkt');
 var sfss = require('../../src/scraper/scrapers/svenskaflippersallskapet');
 var sendgrid = require('../../src/resources/sendgrid');
-var matchCache = require('../../src/resources/matchCache');
+var s3 = require('../../src/resources/s3');
 
 describe('scraper', function () {
   afterEach(function () {
     flippermarkt.scrape.restore && flippermarkt.scrape.restore();
     sfss.scrape.restore && sfss.scrape.restore();
     sendgrid.sendMatches.restore && sendgrid.sendMatches.restore();
-    matchCache.getNewMatches.restore && matchCache.getNewMatches.restore();
-    matchCache.put.restore && matchCache.put.restore();
+    s3.getNewMatches.restore && s3.getNewMatches.restore();
+    s3.putMatches.restore && s3.putMatches.restore();
   });
 
   describe('run', function () {
-    it('should call the cache functions getNewMatches and put to cache new matches', function () {
+    it('should call the cache functions getNewMatches and putMatches to cache new matches', function () {
       var recipients = [
         {
           email: 'your@email.com',
@@ -35,16 +35,16 @@ describe('scraper', function () {
       var flippermarktScrapeSpy = sinon.stub(flippermarkt, 'scrape').callsFake(() => Promise.resolve(matches));
       var sfssScrapeSpy = sinon.stub(sfss, 'scrape').callsFake(() => Promise.resolve([]));
       var sendMatchesSpy = sinon.stub(sendgrid, 'sendMatches').callsFake(() => Promise.resolve());
-      var getNewMatchesSpy = sinon.stub(matchCache, 'getNewMatches').callsFake(() => Promise.resolve(matches));
-      var putSpy = sinon.stub(matchCache, 'put').callsFake(() => Promise.resolve());
+      var getNewMatchesSpy = sinon.stub(s3, 'getNewMatches').callsFake(() => Promise.resolve(matches));
+      var putMatchesSpy = sinon.stub(s3, 'putMatches').callsFake(() => Promise.resolve());
 
-      return scraper.run(recipients, matchCache)
+      return scraper.run(recipients, s3)
         .then(() => {
           assert.isTrue(flippermarktScrapeSpy.calledOnce);
           assert.isTrue(sfssScrapeSpy.calledOnce);
           assert.isTrue(getNewMatchesSpy.calledOnce);
           assert.isTrue(sendMatchesSpy.calledOnce);
-          assert.isTrue(putSpy.calledOnce);
+          assert.isTrue(putMatchesSpy.calledOnce);
         });
     });
   });

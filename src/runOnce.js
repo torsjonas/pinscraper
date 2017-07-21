@@ -1,9 +1,9 @@
 var scraper = require('./scraper');
-var matchCache = require('./resources/matchCache');
+var s3 = require('./resources/s3');
 
 var noCache = {
   getNewMatches: (scrapeMatches, recipient) => Promise.resolve(scrapeMatches),
-  put: () => Promise.resolve()
+  putMatches: () => Promise.resolve()
 };
 
 if (!process.argv[2]) {
@@ -18,7 +18,7 @@ var pin = {
   name: process.argv[2]
 };
 
-var cache = process.argv[4] === 'no-cache' ? noCache : matchCache;
+var cache = process.argv[4] === 'no-cache' ? noCache : s3;
 
 var recipients = [{ 'pins': [pin], 'email': process.argv[3] }];
 scraper.run(recipients, cache);

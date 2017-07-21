@@ -58,7 +58,6 @@ function run (recipients, matchCache) {
   return _scrape(allPins)
     .then(scrapeMatches => {
       log.info({ event: 'scrape-done', scrapeMatches });
-
       if (!scrapeMatches || scrapeMatches.length === 0) {
         return Promise.resolve('No matches');
       }
@@ -77,19 +76,13 @@ function run (recipients, matchCache) {
         .then(results => {
           var sendPromises = results.map(({recipient, newMatches}) => {
             if (!newMatches || newMatches.length === 0) {
-              return Promise.resolve('All found matches have already been sent');
+              return Promise.resolve('The matches have already been sent');
             }
 
             return sendgrid.sendMatches(newMatches, recipient)
-              .then(result => {
-                log.info({ event: 'email-sent', result });
-
-                // cache the new matches so we won't send them again.
-                return matchCache.put(newMatches, recipient)
-                  .then(() => {
-                    log.info({ event: 'match-cached' });
-                  });
-              });
+              .then(() => log.info({event: 'email-sent'}))
+              // cache the new matches so we won't send them again.
+              .then(() => matchCache.putMatches(newMatches, recipient));
           });
 
           return Promise.all(sendPromises);

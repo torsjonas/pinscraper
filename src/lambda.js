@@ -1,7 +1,6 @@
 var bunyan = require('bunyan');
 var log = bunyan.createLogger({name: 'pinscraper', module: 'lambda'});
 var s3 = require('./resources/s3');
-var matchCache = require('./resources/matchCache');
 var scraper = require('./scraper');
 
 function run (callback) {
@@ -11,7 +10,7 @@ function run (callback) {
       var recipients = response.recipients;
 
       log.info({ event: 'pinscraper-run' });
-      return scraper.run(recipients, matchCache)
+      return scraper.run(recipients, s3)
         .then(() => {
           callback(null, 'Scrape done!');
         })
